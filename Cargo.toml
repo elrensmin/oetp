@@ -1,0 +1,3 @@
+[workspace]
+members = ["oetp-core", "oetp-edge", "oetp-ledger", "oetp-beacon"]
+resolver = "2"

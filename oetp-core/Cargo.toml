@@ -1,0 +1,31 @@
+[package]
+name = "oetp-core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+thiserror = "2"
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+sha3 = "0.10"
+hkdf = "0.12"
+rand = "0.8"
+zeroize = "1.9.0"
+serde_json = "1"
+serde = { version = "1", features = ["derive"] }
+aes-gcm = "0.11.0"
+bincode = "1"
+x25519-dalek = { version = "2", features = ["static_secrets", "zeroize"] }
+getrandom = "0.2"
+hex = "0.4"
+async-trait = "0.1"
+tracing = "0.1"
+argon2 = "0.5"
+regex = "1"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "latency"
+harness = false

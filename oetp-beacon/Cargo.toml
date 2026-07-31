@@ -1,0 +1,17 @@
+[package]
+name = "oetp-beacon"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+oetp-core = { path = "../oetp-core" }
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+hex = "0.4"
+ed25519-dalek = "2"
+governor = "0.6"
+tower_governor = "0.4"
