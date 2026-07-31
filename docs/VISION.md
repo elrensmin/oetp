@@ -47,7 +47,7 @@ If every student receives a unique encrypted exam packet, and if every packet is
                                      ▼
                            ┌----------------------┐
                            │ Public Merkle Root   │
-                           │ + Blockchain Anchor  │◄---- Courts, Media, RTI
+                           │ + Ledger Anchor      │◄---- Courts, Media, RTI
                            │   "These packets     │       can all check it
                            │    are locked now"   │
                            └----------------------┘
@@ -87,7 +87,7 @@ If every student receives a unique encrypted exam packet, and if every packet is
                     AFTER EXAM
                     ----------
 
-   Answer Key Hash --► Anchored to Blockchain --► Results published
+   Answer Key Hash --► Anchored to public ledger --► Results published
    (before results)         "This is the key
                             used for scoring"
 ```
@@ -97,7 +97,7 @@ If every student receives a unique encrypted exam packet, and if every packet is
 ### 1. Packet Generator
 - Maintains a large question bank per tenant and exam.
 - Generates a unique encrypted packet per student with stratified difficulty, variant values, and shuffled options.
-- Publishes a Merkle commitment of all packet hashes **before the exam**, anchored to a government permissioned blockchain.
+- Publishes a Merkle commitment of all packet hashes **before the exam**, anchored to a government permissioned ledger.
 - Publishes a signed final answer key **before result declaration**.
 
 ### 2. Edge Daemon
@@ -110,7 +110,7 @@ If every student receives a unique encrypted exam packet, and if every packet is
 
 ### 3. Ledger
 - Maintains append-only Merkle trees per tenant.
-- Anchors pre-exam, rolling, and final roots to a government permissioned blockchain.
+- Anchors pre-exam, rolling, and final roots to a government permissioned ledger.
 - Provides a **public verification portal** where any student can independently prove that their submission is recorded exactly as sealed.
 
 ## A Student’s Right to Verify
@@ -133,7 +133,7 @@ This is the feature previous exam systems could not offer.
 
 ## Public Anchoring
 
-Merkle roots are anchored to a government permissioned blockchain so that independent parties (courts, RTI activists, coaching centers, parents, political opposition) can detect any retroactive rewrite of the ledger or answer key.
+Merkle roots are anchored to a government permissioned ledger so that independent parties (courts, RTI activists, coaching centers, parents, political opposition) can detect any retroactive rewrite of the ledger or answer key.
 
 ## Scale and Deployability
 
@@ -141,16 +141,16 @@ OETP is designed for India’s reality: low-cost, heterogeneous hardware, interm
 
 ## How Each Attack Is Contained or Detected
 
-| Attack                                     | Defense                                                                                                                                       |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Paper leak at source**                   | Per-student random draw from a large bank; leaked questions do not match any specific student’s packet.                                       |
-| **Question bank leak**                     | Without the per-student variant assignment and release token, the bank is economically worthless.                                             |
-| **Answer substitution / result tampering** | Submission leaf binds `student_uuid + packet_hash + answers_hash`. Any movement or rewrite breaks the Merkle chain and the blockchain anchor. |
-| **Retroactive answer-key change**          | Answer key is anchored before results are published; any later change is detectable.                                                          |
-| **Ledger manipulation by authority**       | Roots are anchored to a government permissioned blockchain; rewritten roots do not match the anchored record.                                 |
-| **Memory dumping on one machine**          | Compromise is contained to that machine; per-student keys are released just-in-time and zeroized after use.                                   |
-| **Network outage**                         | Encrypted packets and key envelopes are cached locally; signed submissions queue safely and flush when connectivity returns.                  |
-| **Release beacon bribery**                 | Each center has its own release key; a stolen key only unlocks that center’s exam window.                                                     |
+| Attack                                     | Defense                                                                                                                                   |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Paper leak at source**                   | Per-student random draw from a large bank; leaked questions do not match any specific student’s packet.                                   |
+| **Question bank leak**                     | Without the per-student variant assignment and release token, the bank is economically worthless.                                         |
+| **Answer substitution / result tampering** | Submission leaf binds `student_uuid + packet_hash + answers_hash`. Any movement or rewrite breaks the Merkle chain and the ledger anchor. |
+| **Retroactive answer-key change**          | Answer key is anchored before results are published; any later change is detectable.                                                      |
+| **Ledger manipulation by authority**       | Roots are anchored to a government permissioned ledger; rewritten roots do not match the anchored record.                                 |
+| **Memory dumping on one machine**          | Compromise is contained to that machine; per-student keys are released just-in-time and zeroized after use.                               |
+| **Network outage**                         | Encrypted packets and key envelopes are cached locally; signed submissions queue safely and flush when connectivity returns.              |
+| **Release beacon bribery**                 | Each center has its own release key; a stolen key only unlocks that center’s exam window.                                                 |
 
 ## Out of Scope
 

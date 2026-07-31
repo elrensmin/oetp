@@ -1,4 +1,4 @@
-// blockchain anchoring worker - periodically anchors Merkle roots to Polygon
+// ledger anchoring worker - periodically anchors Merkle roots to Polygon
 use oetp_core::error::Result;
 use oetp_core::platform::{Anchor, AnchorBackend, AnchorType, Store};
 use std::sync::Arc;

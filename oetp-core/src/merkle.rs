@@ -1,4 +1,4 @@
-// builds a Merkle tree of all packet hashes, root gets anchored to blockchain
+// builds a Merkle tree of all packet hashes, root gets anchored to ledger
 
 use crate::error::{Error, Result};
 use serde::{Deserialize, Serialize};
@@ -113,7 +113,11 @@ impl MerkleTree {
         let mut index = leaf_index;
 
         for level in &self.levels[..self.levels.len() - 1] {
-            let sibling_index = if index.is_multiple_of(2) { index + 1 } else { index - 1 };
+            let sibling_index = if index.is_multiple_of(2) {
+                index + 1
+            } else {
+                index - 1
+            };
             if sibling_index < level.len() {
                 siblings.push(level[sibling_index]);
             }

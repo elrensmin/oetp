@@ -2,7 +2,7 @@
 
 Cryptographic middleware that eliminates systemic exam fraud by making leaked papers economically worthless and tampering mathematically detectable.
 
-This repository is a **single-tenant pilot** implementation. It is designed to run one exam for one tenant at a time, with all services co-located or on a small set of trusted machines. National-scale multi-tenant orchestration, horizontal scaling, and blockchain anchoring are explicitly out of scope for this codebase.
+This repository is a **single-tenant pilot** implementation. It is designed to run one exam for one tenant at a time, with all services co-located or on a small set of trusted machines. National-scale multi-tenant orchestration and horizontal scaling are explicitly out of scope for this codebase.
 
 ## Architecture
 
@@ -38,12 +38,12 @@ Please see dev/national-e2e.sh for detailed info of how the system works (multi-
 
 ### Anti-Bribery
 
-| Attack                        | Defense                                                                                                                                                                                                                                                                          |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Bribed generator operator** | The generator's signing key is kept separate from the output directory. The manifest is signed and verified at runtime. `correct_index` is not in the packet - the answer key is anchored separately and released post-exam.                                                     |
-| **Bribed center operator**    | Each center has its own release key. A stolen key only unlocks that center's devices. Release tokens are bound to `device_id`.                                                                                                                                                   |
-| **Bribed ledger operator**    | The ledger uses an append-only SQLite store with signed Merkle checkpoints. Any modification to stored data changes the Merkle root, which is anchored. The `MockAnchorBackend` is for development only - production deployments must use a real transparency log or blockchain. |
-| **Bribed proctor**            | The proctor cannot decrypt packets without the release token from the beacon. The beacon is a separate, authority-controlled process.                                                                                                                                            |
+| Attack                        | Defense                                                                                                                                                                                                                                                            |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Bribed generator operator** | The generator's signing key is kept separate from the output directory. The manifest is signed and verified at runtime. `correct_index` is not in the packet - the answer key is anchored separately and released post-exam.                                       |
+| **Bribed center operator**    | Each center has its own release key. A stolen key only unlocks that center's devices. Release tokens are bound to `device_id`.                                                                                                                                     |
+| **Bribed ledger operator**    | The ledger uses an append-only SQLite store with signed Merkle checkpoints. Any modification to stored data changes the Merkle root, which is anchored. The `MockAnchorBackend` is for development only - production deployments must use a real transparency log. |
+| **Bribed proctor**            | The proctor cannot decrypt packets without the release token from the beacon. The beacon is a separate, authority-controlled process.                                                                                                                              |
 
 ### Anti-Hacking
 
@@ -136,38 +136,38 @@ cargo test --workspace
 
 ### Edge Daemon (localhost:8080)
 
-| Endpoint              | Method | Description                                                 |
-| --------------------- | ------ | ----------------------------------------------------------- |
-| `/v1/exam/fetch`      | POST   | Download encrypted packet + key envelope                    |
-| `/v1/exam/release`    | POST   | Obtain release token from local beacon (bound to device_id) |
-| `/v1/exam/unlock`     | POST   | Decrypt and return questions (requires release token)       |
-| `/v1/exam/submit`     | POST   | Seal answers, return receipt + personal copy                |
-| `/v1/system/clock`   | POST   | Operational: set system clock for testing (authenticated)   |
-| `/v1/system/flush`   | POST   | Operational: flush offline queue to ledger (authenticated)  |
-| `/health`             | GET    | Health check                                                |
+| Endpoint           | Method | Description                                                 |
+| ------------------ | ------ | ----------------------------------------------------------- |
+| `/v1/exam/fetch`   | POST   | Download encrypted packet + key envelope                    |
+| `/v1/exam/release` | POST   | Obtain release token from local beacon (bound to device_id) |
+| `/v1/exam/unlock`  | POST   | Decrypt and return questions (requires release token)       |
+| `/v1/exam/submit`  | POST   | Seal answers, return receipt + personal copy                |
+| `/v1/system/clock` | POST   | Operational: set system clock for testing (authenticated)   |
+| `/v1/system/flush` | POST   | Operational: flush offline queue to ledger (authenticated)  |
+| `/health`          | GET    | Health check                                                |
 
 ### Ledger API (port 8081)
 
-| Endpoint                | Method | Description                                                    |
-| ----------------------- | ------ | -------------------------------------------------------------- |
-| `/v1/ledger/commit`     | POST   | Pre-exam Merkle root commitment                                |
-| `/v1/ledger/ingest`     | POST   | Submission ingestion (includes receipt_id for proof lookup)    |
-| `/v1/ledger/proof`      | POST   | Full Merkle proof by receipt (leaf, index, siblings, root)     |
-| `/v1/ledger/key`        | POST   | Answer-key hash commitment                                     |
-| `/v1/ledger/fetch`      | POST   | Fetch packet + envelope for edge                               |
-| `/v1/ledger/verify`     | POST   | Verify submission: leaf hash, edge signature, ledger inclusion |
-| `/v1/ledger/anchors`   | POST   | List all blockchain anchors for a tenant/exam                  |
-| `/v1/ledger/load`       | POST   | Load generated packets (pre-exam, authenticated)               |
-| `/v1/system/clock`      | POST   | Operational: set system clock for testing (authenticated)      |
-| `/health`               | GET    | Health check                                                   |
+| Endpoint             | Method | Description                                                    |
+| -------------------- | ------ | -------------------------------------------------------------- |
+| `/v1/ledger/commit`  | POST   | Pre-exam Merkle root commitment                                |
+| `/v1/ledger/ingest`  | POST   | Submission ingestion (includes receipt_id for proof lookup)    |
+| `/v1/ledger/proof`   | POST   | Full Merkle proof by receipt (leaf, index, siblings, root)     |
+| `/v1/ledger/key`     | POST   | Answer-key hash commitment                                     |
+| `/v1/ledger/fetch`   | POST   | Fetch packet + envelope for edge                               |
+| `/v1/ledger/verify`  | POST   | Verify submission: leaf hash, edge signature, ledger inclusion |
+| `/v1/ledger/anchors` | POST   | List all anchors for a tenant/exam                             |
+| `/v1/ledger/load`    | POST   | Load generated packets (pre-exam, authenticated)               |
+| `/v1/system/clock`   | POST   | Operational: set system clock for testing (authenticated)      |
+| `/health`            | GET    | Health check                                                   |
 
 ### Beacon API (port 9090)
 
-| Endpoint              | Method | Description                                              |
-| --------------------- | ------ | -------------------------------------------------------- |
-| `/v1/beacon/token`    | POST   | Issue a time-bound release token for a device            |
-| `/v1/system/clock`    | POST   | Operational: set system clock for testing (authenticated) |
-| `/health`             | GET    | Health check                                             |
+| Endpoint           | Method | Description                                               |
+| ------------------ | ------ | --------------------------------------------------------- |
+| `/v1/beacon/token` | POST   | Issue a time-bound release token for a device             |
+| `/v1/system/clock` | POST   | Operational: set system clock for testing (authenticated) |
+| `/health`          | GET    | Health check                                              |
 
 ## Benchmarks
 
@@ -185,24 +185,24 @@ The ledger uses an in-memory `MemStore` by default for the pilot. A SQLite-backe
 
 ### Edge Daemon
 
-| Variable                 | Default                 | Required | Description                              |
-| ------------------------ | ----------------------- | -------- | ---------------------------------------- |
-| `OETP_TENANT_ID`         | -                       | Yes      | Tenant identifier                        |
-| `OETP_EXAM_ID`           | -                       | Yes      | Exam identifier                          |
-| `OETP_DEVICE_ID`         | -                       | Yes      | Device identifier                        |
-| `OETP_CENTER_ID`         | -                       | Yes      | Center identifier                        |
-| `OETP_LEDGER_URL`        | `http://localhost:8081` | No       | Ledger URL                               |
-| `OETP_BEACON_URL`        | `http://localhost:9090` | No       | Beacon URL                               |
-| `OETP_LISTEN_ADDR`       | `127.0.0.1:8080`        | No       | Edge listen address                      |
-| `OETP_DEVICE_KEY`        | `/etc/oetp/device.key`  | No       | Ed25519 device key path                  |
-| `OETP_CACHE_DIR`         | `/var/cache/oetp`       | No       | Packet cache directory                   |
-| `OETP_QUEUE_DIR`         | `/var/spool/oetp`       | No       | Offline queue directory                  |
-| `OETP_BEACON_PUBLIC_KEY` | -                       | Yes      | Center beacon Ed25519 public key (hex)   |
-| `OETP_EXAM_SALT`         | -                       | Yes      | Per-exam random salt (32-byte hex)       |
-| `OETP_SERVER_PEPPER`     | -                       | Yes      | Server pepper for Argon2id (32-byte hex) |
-| `OETP_API_KEY`           | -                       | Yes      | API key for edge endpoints               |
-| `OETP_RATE_LIMIT_PER_SECOND` | `10`                 | No       | Rate-limit replenish per second          |
-| `OETP_RATE_LIMIT_BURST`  | `1000`                  | No       | Rate-limit burst bucket size             |
+| Variable                     | Default                 | Required | Description                              |
+| ---------------------------- | ----------------------- | -------- | ---------------------------------------- |
+| `OETP_TENANT_ID`             | -                       | Yes      | Tenant identifier                        |
+| `OETP_EXAM_ID`               | -                       | Yes      | Exam identifier                          |
+| `OETP_DEVICE_ID`             | -                       | Yes      | Device identifier                        |
+| `OETP_CENTER_ID`             | -                       | Yes      | Center identifier                        |
+| `OETP_LEDGER_URL`            | `http://localhost:8081` | No       | Ledger URL                               |
+| `OETP_BEACON_URL`            | `http://localhost:9090` | No       | Beacon URL                               |
+| `OETP_LISTEN_ADDR`           | `127.0.0.1:8080`        | No       | Edge listen address                      |
+| `OETP_DEVICE_KEY`            | `/etc/oetp/device.key`  | No       | Ed25519 device key path                  |
+| `OETP_CACHE_DIR`             | `/var/cache/oetp`       | No       | Packet cache directory                   |
+| `OETP_QUEUE_DIR`             | `/var/spool/oetp`       | No       | Offline queue directory                  |
+| `OETP_BEACON_PUBLIC_KEY`     | -                       | Yes      | Center beacon Ed25519 public key (hex)   |
+| `OETP_EXAM_SALT`             | -                       | Yes      | Per-exam random salt (32-byte hex)       |
+| `OETP_SERVER_PEPPER`         | -                       | Yes      | Server pepper for Argon2id (32-byte hex) |
+| `OETP_API_KEY`               | -                       | Yes      | API key for edge endpoints               |
+| `OETP_RATE_LIMIT_PER_SECOND` | `10`                    | No       | Rate-limit replenish per second          |
+| `OETP_RATE_LIMIT_BURST`      | `1000`                  | No       | Rate-limit burst bucket size             |
 
 ### Ledger
 
@@ -214,19 +214,19 @@ The ledger uses an in-memory `MemStore` by default for the pilot. A SQLite-backe
 | `OETP_API_KEY`            | -                       | Yes      | API key for ledger endpoints     |
 | `OETP_LEDGER_LISTEN_ADDR` | `0.0.0.0:8081`          | No       | Ledger listen address            |
 | `OETP_LEDGER_DB_PATH`     | `/var/lib/oetp/ledger`  | No       | Database path                    |
-| `OETP_ANCHOR_RPC_URL`     | `http://localhost:8545` | No       | Blockchain RPC URL               |
+| `OETP_ANCHOR_RPC_URL`     | `http://localhost:8545` | No       | RPC URL                          |
 
 ### Beacon
 
-| Variable                  | Default                 | Required | Description                       |
-| ------------------------- | ----------------------- | -------- | --------------------------------- |
-| `OETP_BEACON_LISTEN_ADDR` | `0.0.0.0:9090`          | No       | Beacon listen address             |
-| `OETP_BEACON_SIGNING_KEY` | -                       | Yes      | Beacon Ed25519 signing key (hex)  |
-| `OETP_EXAM_WINDOW_START`  | `0`                     | No       | Exam window start (Unix seconds)  |
-| `OETP_EXAM_WINDOW_END`    | `u64::MAX`              | No       | Exam window end (Unix seconds)    |
-| `OETP_API_KEY`            | -                       | Yes      | API key for beacon endpoints      |
-| `OETP_RATE_LIMIT_PER_SECOND` | `10`                 | No       | Rate-limit replenish per second   |
-| `OETP_RATE_LIMIT_BURST`   | `1000`                  | No       | Rate-limit burst bucket size      |
+| Variable                     | Default        | Required | Description                      |
+| ---------------------------- | -------------- | -------- | -------------------------------- |
+| `OETP_BEACON_LISTEN_ADDR`    | `0.0.0.0:9090` | No       | Beacon listen address            |
+| `OETP_BEACON_SIGNING_KEY`    | -              | Yes      | Beacon Ed25519 signing key (hex) |
+| `OETP_EXAM_WINDOW_START`     | `0`            | No       | Exam window start (Unix seconds) |
+| `OETP_EXAM_WINDOW_END`       | `u64::MAX`     | No       | Exam window end (Unix seconds)   |
+| `OETP_API_KEY`               | -              | Yes      | API key for beacon endpoints     |
+| `OETP_RATE_LIMIT_PER_SECOND` | `10`           | No       | Rate-limit replenish per second  |
+| `OETP_RATE_LIMIT_BURST`      | `1000`         | No       | Rate-limit burst bucket size     |
 
 ## Key Files
 
@@ -245,9 +245,9 @@ The ledger uses an in-memory `MemStore` by default for the pilot. A SQLite-backe
 | Memory scraping        | mlock + zeroize-on-drop; explicit zeroization of ephemeral keys                                  |
 | Network outage         | Encrypted packets cached locally; signed submissions queue and flush later                       |
 | Center bribery         | Release tokens bound to `device_id`; stolen key only unlocks that device                         |
-| Replay attacks         | Release-token nonces persisted to disk; ledger ingest idempotent by `receipt_id`               |
+| Replay attacks         | Release-token nonces persisted to disk; ledger ingest idempotent by `receipt_id`                 |
 | Forged receipts        | Receipts signed by edge + ledger; verification payload includes Merkle proof                     |
-| API key brute-force    | API key required (minimum 32 characters); rate limiting keyed by peer IP                       |
+| API key brute-force    | API key required (minimum 32 characters); rate limiting keyed by peer IP                         |
 
 
 ## License

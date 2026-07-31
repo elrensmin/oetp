@@ -2,7 +2,7 @@
 
 ## Project Scope
 
-This is a **single-tenant pilot** of the Open Exam Transparency Protocol. Do not add national-scale features, multi-tenant orchestration, blockchain anchoring beyond the existing mock, Prometheus metrics, GitHub Actions, or production deployment automation unless explicitly asked.
+This is a **single-tenant pilot** of the Open Exam Transparency Protocol. Do not add national-scale features, multi-tenant orchestration (ledger anchoring beyond the existing mock if thought important), Prometheus metrics, GitHub Actions, or production deployment automation unless explicitly asked.
 
 ## Architecture
 

@@ -260,7 +260,7 @@ curl -s -X POST http://localhost:8081/v1/ledger/key \
 
 ## 9. Ledger: List Anchors
 
-List all blockchain anchors for a tenant/exam.
+List all ledger anchors for a tenant/exam.
 
 ```bash
 curl -s -X POST http://localhost:8081/v1/ledger/anchors \

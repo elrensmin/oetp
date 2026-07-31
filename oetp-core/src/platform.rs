@@ -1,4 +1,4 @@
-// traits that abstract storage, blockchain anchoring, and OS process hardening
+// traits that abstract storage, ledger anchoring, and OS process hardening
 use crate::error::Result;
 use serde::{Deserialize, Serialize};
 
